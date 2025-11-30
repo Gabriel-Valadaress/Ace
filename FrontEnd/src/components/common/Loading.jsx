@@ -1,28 +1,78 @@
+import styled, { keyframes } from 'styled-components';
+
+const spin = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
+const FullScreenContainer = styled.div`
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.8);
+  z-index: 50;
+`;
+
+const SpinnerContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+`;
+
+const Spinner = styled.div`
+  border: ${props => {
+    switch(props.size) {
+      case 'small': return '2px';
+      case 'large': return '4px';
+      default: return '3px';
+    }
+  }} solid #e5e7eb;
+  border-top-color: rgb(79, 105, 191);
+  border-radius: 50%;
+  width: ${props => {
+    switch(props.size) {
+      case 'small': return '20px';
+      case 'large': return '48px';
+      default: return '32px';
+    }
+  }};
+  height: ${props => {
+    switch(props.size) {
+      case 'small': return '20px';
+      case 'large': return '48px';
+      default: return '32px';
+    }
+  }};
+  animation: ${spin} 1s linear infinite;
+`;
+
+const LoadingText = styled.p`
+  color: #666;
+  font-size: 14px;
+  margin: 0;
+`;
+
 /**
  * Loading spinner component
  */
-function Loading({ fullScreen = false, size = 'medium', text = 'Loading...' }) {
-  const sizeClasses = {
-    small: 'w-5 h-5 border-2',
-    medium: 'w-8 h-8 border-3',
-    large: 'w-12 h-12 border-4',
-  };
-
+function Loading({ fullScreen = false, size = 'medium', text = 'Carregando...' }) {
   const spinner = (
-    <div className="flex flex-col items-center justify-center gap-3">
-      <div
-        className={`${sizeClasses[size]} border-gray-200 border-t-blue-600 rounded-full animate-spin`}
-      />
-      {text && <p className="text-gray-600 text-sm">{text}</p>}
-    </div>
+    <SpinnerContainer>
+      <Spinner size={size} />
+      {text && <LoadingText>{text}</LoadingText>}
+    </SpinnerContainer>
   );
 
   if (fullScreen) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-80 z-50">
-        {spinner}
-      </div>
-    );
+    return <FullScreenContainer>{spinner}</FullScreenContainer>;
   }
 
   return spinner;
