@@ -46,11 +46,47 @@ const Form = styled.form`
   gap: 16px;
 `;
 
-const Footer = styled.p`
+const RememberForgotRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: -8px 0 0 0;
+`;
+
+const CheckboxLabel = styled.label`
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #666;
+  cursor: pointer;
+
+  input {
+    margin-right: 8px;
+    cursor: pointer;
+  }
+`;
+
+const ForgotLink = styled(Link)`
+  font-size: 14px;
+  color: rgb(79, 105, 191);
+  text-decoration: none;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+const Footer = styled.div`
   text-align: center;
   margin: 16px 0 0 0;
   font-size: 14px;
   color: #666;
+`;
+
+const ResendText = styled.p`
+  font-size: 13px;
+  color: #999;
+  margin: 8px 0 0 0;
 `;
 
 const StyledLink = styled(Link)`
@@ -68,6 +104,7 @@ function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const [serverError, setServerError] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
 
   const from = location.state?.from?.pathname || '/dashboard';
 
@@ -134,6 +171,18 @@ function Login() {
             required
           />
 
+          <RememberForgotRow>
+            <CheckboxLabel>
+              <input 
+                type="checkbox" 
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+              />
+              Lembrar de mim
+            </CheckboxLabel>
+            <ForgotLink to="/forgot-password">Esqueceu a senha?</ForgotLink>
+          </RememberForgotRow>
+
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Entrando...' : 'Entrar'}
           </Button>
@@ -141,6 +190,10 @@ function Login() {
 
         <Footer>
           Não possui uma conta? <StyledLink to="/register">Criar conta</StyledLink>
+          <ResendText>
+            Não recebeu o e-mail de verificação?{' '}
+            <StyledLink to="/resend-verification">Reenviar</StyledLink>
+          </ResendText>
         </Footer>
       </FormCard>
     </Container>
