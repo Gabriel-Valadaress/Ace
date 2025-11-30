@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import styled from 'styled-components';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useForm } from '../hooks/useForm';
@@ -7,9 +8,57 @@ import Input from '../components/common/Input';
 import Button from '../components/common/Button';
 import Alert from '../components/common/Alert';
 
-/**
- * Reset password page
- */
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 24px;
+`;
+
+const FormCard = styled.div`
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  padding: 32px;
+  width: 100%;
+  max-width: 400px;
+`;
+
+const Title = styled.h1`
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  text-align: center;
+`;
+
+const Subtitle = styled.p`
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 24px 0;
+  text-align: center;
+  line-height: 1.5;
+`;
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+
+const Icon = styled.div`
+  font-size: 64px;
+  margin-bottom: 16px;
+  text-align: center;
+`;
+
+const PasswordHint = styled.p`
+  font-size: 12px;
+  color: #666;
+  margin: 4px 0 0 0;
+`;
+
 function ResetPassword() {
   const [searchParams] = useSearchParams();
   const { resetPassword } = useAuth();
@@ -24,14 +73,14 @@ function ResetPassword() {
   const validate = (values) => {
     const errors = {};
     if (!values.password) {
-      errors.password = 'Password is required';
+      errors.password = 'Senha é obrigatória';
     } else if (!isValidPassword(values.password)) {
-      errors.password = 'Password must have at least 8 characters, one uppercase, one lowercase, and one number';
+      errors.password = 'A senha deve ter pelo menos 8 caracteres, uma letra maiúscula, uma minúscula e um número';
     }
     if (!values.confirmPassword) {
-      errors.confirmPassword = 'Confirm password is required';
+      errors.confirmPassword = 'Confirmação de senha é obrigatória';
     } else if (values.password !== values.confirmPassword) {
-      errors.confirmPassword = 'Passwords do not match';
+      errors.confirmPassword = 'As senhas não coincidem';
     }
     return errors;
   };
@@ -49,7 +98,7 @@ function ResetPassword() {
     setServerError('');
     
     if (!email || !token) {
-      setServerError('Invalid reset link. Please request a new one.');
+      setServerError('Link de redefinição inválido. Por favor, solicite um novo.');
       return;
     }
 
@@ -68,102 +117,90 @@ function ResetPassword() {
     }
   };
 
-  // Invalid link check
   if (!email || !token) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
-        <div className="max-w-md w-full text-center">
-          <div className="bg-white rounded-xl shadow-lg p-8">
-            <div className="text-6xl mb-4">❌</div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Invalid Link</h1>
-            <p className="text-gray-600 mb-6">
-              This password reset link is invalid or has expired.
-            </p>
-            <Link to="/forgot-password">
-              <Button>Request New Link</Button>
-            </Link>
-          </div>
-        </div>
-      </div>
+      <Container>
+        <FormCard>
+          <Icon>❌</Icon>
+          <Title>Link inválido</Title>
+          <Subtitle>
+            Este link de redefinição de senha é inválido ou expirou.
+          </Subtitle>
+          <Link to="/forgot-password">
+            <Button>Solicitar novo link</Button>
+          </Link>
+        </FormCard>
+      </Container>
     );
   }
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
-        <div className="max-w-md w-full text-center">
-          <div className="bg-white rounded-xl shadow-lg p-8">
-            <div className="text-6xl mb-4">✅</div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Password Reset!</h1>
-            <p className="text-gray-600 mb-6">
-              Your password has been successfully reset. Redirecting to login...
-            </p>
-            <Link to="/login">
-              <Button>Go to Login</Button>
-            </Link>
-          </div>
-        </div>
-      </div>
+      <Container>
+        <FormCard>
+          <Icon>✅</Icon>
+          <Title>Senha redefinida!</Title>
+          <Subtitle>
+            Sua senha foi redefinida com sucesso. Redirecionando para o login...
+          </Subtitle>
+          <Link to="/login">
+            <Button>Ir para Login</Button>
+          </Link>
+        </FormCard>
+      </Container>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
-      <div className="max-w-md w-full">
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-block">
-            <span className="text-4xl">🏖️</span>
-          </Link>
-          <h1 className="mt-4 text-3xl font-bold text-gray-900">Reset your password</h1>
-          <p className="mt-2 text-gray-600">Enter your new password below.</p>
-        </div>
+    <Container>
+      <FormCard>
+        <Title>Redefinir senha</Title>
+        <Subtitle>Digite sua nova senha abaixo.</Subtitle>
 
-        <div className="bg-white rounded-xl shadow-lg p-8">
-          {serverError && (
-            <Alert
-              type="error"
-              message={serverError}
-              onClose={() => setServerError('')}
-              className="mb-6"
-            />
-          )}
+        {serverError && (
+          <Alert
+            type="error"
+            message={serverError}
+            onClose={() => setServerError('')}
+          />
+        )}
 
-          <form onSubmit={handleSubmit(onSubmit)}>
+        <Form onSubmit={handleSubmit(onSubmit)}>
+          <div>
             <Input
-              label="New Password"
+              label="Nova senha"
               name="password"
               type="password"
-              placeholder="••••••••"
+              placeholder="Digite sua nova senha"
               value={values.password}
               onChange={handleChange}
               onBlur={handleBlur}
               error={getFieldError('password')}
               required
             />
+            {!getFieldError('password') && (
+              <PasswordHint>A senha deve ter pelo menos 8 caracteres</PasswordHint>
+            )}
+          </div>
 
-            <Input
-              label="Confirm New Password"
-              name="confirmPassword"
-              type="password"
-              placeholder="••••••••"
-              value={values.confirmPassword}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={getFieldError('confirmPassword')}
-              required
-            />
+          <Input
+            label="Confirme a nova senha"
+            name="confirmPassword"
+            type="password"
+            placeholder="Digite sua senha novamente"
+            value={values.confirmPassword}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={getFieldError('confirmPassword')}
+            required
+          />
 
-            <Button
-              type="submit"
-              fullWidth
-              loading={isSubmitting}
-            >
-              Reset Password
-            </Button>
-          </form>
-        </div>
-      </div>
-    </div>
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Redefinindo...' : 'Redefinir senha'}
+          </Button>
+        </Form>
+      </FormCard>
+    </Container>
   );
 }
 
