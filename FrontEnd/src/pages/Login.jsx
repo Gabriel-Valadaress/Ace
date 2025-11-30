@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import styled from 'styled-components';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useForm } from '../hooks/useForm';
@@ -7,9 +8,61 @@ import Input from '../components/common/Input';
 import Button from '../components/common/Button';
 import Alert from '../components/common/Alert';
 
-/**
- * Login page
- */
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 24px;
+`;
+
+const FormCard = styled.div`
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  padding: 32px;
+  width: 100%;
+  max-width: 400px;
+`;
+
+const Title = styled.h1`
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  text-align: center;
+`;
+
+const Subtitle = styled.p`
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 24px 0;
+  text-align: center;
+`;
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+
+const Footer = styled.p`
+  text-align: center;
+  margin: 16px 0 0 0;
+  font-size: 14px;
+  color: #666;
+`;
+
+const StyledLink = styled(Link)`
+  color: rgb(79, 105, 191);
+  text-decoration: none;
+  font-weight: 500;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
 function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -20,7 +73,6 @@ function Login() {
 
   const {
     values,
-    errors,
     isSubmitting,
     handleChange,
     handleBlur,
@@ -44,89 +96,54 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
-      <div className="max-w-md w-full">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-block">
-            <span className="text-4xl">🏖️</span>
-          </Link>
-          <h1 className="mt-4 text-3xl font-bold text-gray-900">Welcome back!</h1>
-          <p className="mt-2 text-gray-600">Sign in to your account</p>
-        </div>
+    <Container>
+      <FormCard>
+        <Title>Entrar</Title>
+        <Subtitle>Acesse sua conta</Subtitle>
 
-        {/* Form */}
-        <div className="bg-white rounded-xl shadow-lg p-8">
-          {serverError && (
-            <Alert
-              type="error"
-              message={serverError}
-              onClose={() => setServerError('')}
-              className="mb-6"
-            />
-          )}
+        {serverError && (
+          <Alert
+            type="error"
+            message={serverError}
+            onClose={() => setServerError('')}
+          />
+        )}
 
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <Input
-              label="Email"
-              name="email"
-              type="email"
-              placeholder="your@email.com"
-              value={values.email}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={getFieldError('email')}
-              required
-            />
+        <Form onSubmit={handleSubmit(onSubmit)}>
+          <Input
+            label="E-mail"
+            name="email"
+            type="email"
+            placeholder="Digite seu e-mail"
+            value={values.email}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={getFieldError('email')}
+            required
+          />
 
-            <Input
-              label="Password"
-              name="password"
-              type="password"
-              placeholder="••••••••"
-              value={values.password}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={getFieldError('password')}
-              required
-            />
+          <Input
+            label="Senha"
+            name="password"
+            type="password"
+            placeholder="Digite sua senha"
+            value={values.password}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={getFieldError('password')}
+            required
+          />
 
-            <div className="flex items-center justify-between mb-6">
-              <label className="flex items-center">
-                <input type="checkbox" className="rounded border-gray-300 text-blue-600" />
-                <span className="ml-2 text-sm text-gray-600">Remember me</span>
-              </label>
-              <Link to="/forgot-password" className="text-sm text-blue-600 hover:text-blue-700">
-                Forgot password?
-              </Link>
-            </div>
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Entrando...' : 'Entrar'}
+          </Button>
+        </Form>
 
-            <Button
-              type="submit"
-              fullWidth
-              loading={isSubmitting}
-            >
-              Sign In
-            </Button>
-          </form>
-
-          <div className="mt-6 text-center">
-            <p className="text-gray-600">
-              Don't have an account?{' '}
-              <Link to="/register" className="text-blue-600 hover:text-blue-700 font-medium">
-                Sign up
-              </Link>
-            </p>
-            <p className="text-gray-500 text-sm mt-2">
-              Didn't receive verification email?{' '}
-              <Link to="/resend-verification" className="text-blue-600 hover:text-blue-700">
-                Resend
-              </Link>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+        <Footer>
+          Não possui uma conta? <StyledLink to="/register">Criar conta</StyledLink>
+        </Footer>
+      </FormCard>
+    </Container>
   );
 }
 

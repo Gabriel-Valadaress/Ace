@@ -20,7 +20,6 @@ const StyledInput = styled.input`
   border: 1px solid ${props => props.hasError ? '#ef4444' : '#ddd'};
   border-radius: 6px;
   outline: none;
-  transition: border-color 0.2s ease;
 
   &:focus {
     border-color: ${props => props.hasError ? '#ef4444' : 'rgb(79, 105, 191)'};
