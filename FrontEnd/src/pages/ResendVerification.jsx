@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import authService from '../services/authService';
 import { useForm } from '../hooks/useForm';
@@ -7,9 +8,93 @@ import Input from '../components/common/Input';
 import Button from '../components/common/Button';
 import Alert from '../components/common/Alert';
 
-/**
- * Resend verification email page
- */
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 24px;
+`;
+
+const FormCard = styled.div`
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  padding: 32px;
+  width: 100%;
+  max-width: 400px;
+`;
+
+const Title = styled.h1`
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  text-align: center;
+`;
+
+const Subtitle = styled.p`
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 24px 0;
+  text-align: center;
+  line-height: 1.5;
+`;
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+
+const Footer = styled.div`
+  text-align: center;
+  margin: 16px 0 0 0;
+`;
+
+const FooterText = styled.p`
+  font-size: 14px;
+  color: #666;
+  margin: 8px 0 0 0;
+`;
+
+const StyledLink = styled(Link)`
+  font-size: 14px;
+  color: rgb(79, 105, 191);
+  text-decoration: none;
+  font-weight: 500;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+const SuccessIcon = styled.div`
+  font-size: 64px;
+  margin-bottom: 16px;
+  text-align: center;
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+const TextButton = styled.button`
+  background: none;
+  border: none;
+  color: rgb(79, 105, 191);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
 function ResendVerification() {
   const [serverError, setServerError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -17,9 +102,9 @@ function ResendVerification() {
   const validate = (values) => {
     const errors = {};
     if (!values.email) {
-      errors.email = 'Email is required';
+      errors.email = 'E-mail é obrigatório';
     } else if (!isValidEmail(values.email)) {
-      errors.email = 'Invalid email format';
+      errors.email = 'Formato de e-mail inválido';
     }
     return errors;
   };
@@ -45,99 +130,75 @@ function ResendVerification() {
         setServerError(response.message);
       }
     } catch (err) {
-      setServerError(err.response?.data?.message || 'Failed to resend verification email');
+      setServerError(err.response?.data?.message || 'Falha ao reenviar e-mail de verificação');
     }
   };
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
-        <div className="max-w-md w-full text-center">
-          <div className="bg-white rounded-xl shadow-lg p-8">
-            <div className="text-6xl mb-4">📧</div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Email Sent!</h1>
-            <p className="text-gray-600 mb-6">
-              We sent a new verification link to <strong>{values.email}</strong>.
-              Please check your inbox and click the link to verify your account.
-            </p>
-            <div className="flex flex-col gap-3">
-              <Link to="/login">
-                <Button fullWidth>Go to Login</Button>
-              </Link>
-              <button
-                onClick={() => setSuccess(false)}
-                className="text-blue-600 hover:text-blue-700 font-medium"
-              >
-                Send to a different email
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Container>
+        <FormCard>
+          <SuccessIcon>📧</SuccessIcon>
+          <Title>E-mail enviado!</Title>
+          <Subtitle>
+            Enviamos um novo link de verificação para <strong>{values.email}</strong>. 
+            Verifique sua caixa de entrada e clique no link.
+          </Subtitle>
+          <ButtonGroup>
+            <Link to="/login">
+              <Button>Ir para Login</Button>
+            </Link>
+            <TextButton onClick={() => setSuccess(false)}>
+              Enviar para outro e-mail
+            </TextButton>
+          </ButtonGroup>
+        </FormCard>
+      </Container>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
-      <div className="max-w-md w-full">
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-block">
-            <span className="text-4xl">🏖️</span>
-          </Link>
-          <h1 className="mt-4 text-3xl font-bold text-gray-900">Resend Verification</h1>
-          <p className="mt-2 text-gray-600">
-            Enter your email to receive a new verification link.
-          </p>
-        </div>
+    <Container>
+      <FormCard>
+        <Title>Reenviar verificação</Title>
+        <Subtitle>
+          Digite seu e-mail para receber um novo link de verificação.
+        </Subtitle>
 
-        <div className="bg-white rounded-xl shadow-lg p-8">
-          {serverError && (
-            <Alert
-              type="error"
-              message={serverError}
-              onClose={() => setServerError('')}
-              className="mb-6"
-            />
-          )}
+        {serverError && (
+          <Alert
+            type="error"
+            message={serverError}
+            onClose={() => setServerError('')}
+          />
+        )}
 
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <Input
-              label="Email"
-              name="email"
-              type="email"
-              placeholder="your@email.com"
-              value={values.email}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={getFieldError('email')}
-              required
-            />
+        <Form onSubmit={handleSubmit(onSubmit)}>
+          <Input
+            label="E-mail"
+            name="email"
+            type="email"
+            placeholder="Digite seu e-mail"
+            value={values.email}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={getFieldError('email')}
+            required
+          />
 
-            <Button
-              type="submit"
-              fullWidth
-              loading={isSubmitting}
-            >
-              Resend Verification Email
-            </Button>
-          </form>
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Enviando...' : 'Reenviar e-mail'}
+          </Button>
+        </Form>
 
-          <div className="mt-6 text-center space-y-2">
-            <p>
-              <Link to="/login" className="text-blue-600 hover:text-blue-700 font-medium">
-                ← Back to Login
-              </Link>
-            </p>
-            <p className="text-gray-500 text-sm">
-              Don't have an account?{' '}
-              <Link to="/register" className="text-blue-600 hover:text-blue-700">
-                Sign up
-              </Link>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+        <Footer>
+          <StyledLink to="/login">← Voltar para Login</StyledLink>
+          <FooterText>
+            Não possui uma conta? <StyledLink to="/register">Criar conta</StyledLink>
+          </FooterText>
+        </Footer>
+      </FormCard>
+    </Container>
   );
 }
 
