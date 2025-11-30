@@ -1,56 +1,49 @@
-/**
- * Reusable input component with label and error handling
- */
-function Input({
-  label,
-  name,
-  type = 'text',
-  placeholder,
-  value,
-  onChange,
-  onBlur,
-  error,
-  disabled = false,
-  required = false,
-  className = '',
-  ...props
-}) {
-  const inputId = `input-${name}`;
+import styled from 'styled-components';
 
+const InputContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+`;
+
+const Label = styled.label`
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+`;
+
+const StyledInput = styled.input`
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid ${props => props.hasError ? '#ef4444' : '#ddd'};
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.2s ease;
+
+  &:focus {
+    border-color: ${props => props.hasError ? '#ef4444' : 'rgb(79, 105, 191)'};
+  }
+
+  &::placeholder {
+    color: #999;
+  }
+`;
+
+const ErrorMessage = styled.span`
+  font-size: 12px;
+  color: #ef4444;
+  margin-top: -4px;
+`;
+
+function Input({ label, error, ...props }) {
   return (
-    <div className={`mb-4 ${className}`}>
-      {label && (
-        <label
-          htmlFor={inputId}
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
-        </label>
-      )}
-
-      <input
-        id={inputId}
-        name={name}
-        type={type}
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange}
-        onBlur={onBlur}
-        disabled={disabled}
-        required={required}
-        className={`w-full px-3 py-2 border rounded-lg shadow-sm placeholder-gray-400
-          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-          disabled:bg-gray-100 disabled:cursor-not-allowed
-          ${error ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'}
-        `}
-        {...props}
-      />
-
-      {error && (
-        <p className="mt-1 text-sm text-red-600">{error}</p>
-      )}
-    </div>
+    <InputContainer>
+      {label && <Label>{label}</Label>}
+      <StyledInput hasError={!!error} {...props} />
+      {error && <ErrorMessage>{error}</ErrorMessage>}
+    </InputContainer>
   );
 }
 

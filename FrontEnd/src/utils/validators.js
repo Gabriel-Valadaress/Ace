@@ -138,13 +138,13 @@ export const validateLoginForm = (values) => {
   const errors = {};
 
   if (!isRequired(values.email)) {
-    errors.email = 'Email is required';
+    errors.email = 'E-mail é obrigatório';
   } else if (!isValidEmail(values.email)) {
-    errors.email = 'Invalid email format';
+    errors.email = 'Formato de e-mail inválido';
   }
 
   if (!isRequired(values.password)) {
-    errors.password = 'Password is required';
+    errors.password = 'Senha é obrigatória';
   }
 
   return errors;
@@ -157,27 +157,27 @@ export const validateRegisterForm = (values) => {
   const errors = {};
 
   if (!isRequired(values.email)) {
-    errors.email = 'Email is required';
+    errors.email = 'E-mail é obrigatório';
   } else if (!isValidEmail(values.email)) {
-    errors.email = 'Invalid email format';
+    errors.email = 'Formato de e-mail inválido';
   }
 
   if (!isRequired(values.cpf)) {
-    errors.cpf = 'CPF is required';
+    errors.cpf = 'CPF é obrigatório';
   } else if (!isValidCpf(values.cpf)) {
-    errors.cpf = 'Invalid CPF';
+    errors.cpf = 'CPF inválido';
   }
 
   if (!isRequired(values.password)) {
-    errors.password = 'Password is required';
+    errors.password = 'Senha é obrigatória';
   } else if (!isValidPassword(values.password)) {
-    errors.password = 'Password must have at least 8 characters, one uppercase, one lowercase, and one number';
+    errors.password = 'A senha deve ter pelo menos 8 caracteres, uma letra maiúscula, uma minúscula e um número';
   }
 
   if (!isRequired(values.confirmPassword)) {
-    errors.confirmPassword = 'Confirm password is required';
+    errors.confirmPassword = 'Confirmação de senha é obrigatória';
   } else if (values.password !== values.confirmPassword) {
-    errors.confirmPassword = 'Passwords do not match';
+    errors.confirmPassword = 'As senhas não coincidem';
   }
 
   return errors;
@@ -190,27 +190,27 @@ export const validateProfileForm = (values) => {
   const errors = {};
 
   if (!isRequired(values.fullName)) {
-    errors.fullName = 'Full name is required';
+    errors.fullName = 'Nome completo é obrigatório';
   } else if (!minLength(values.fullName, 3)) {
-    errors.fullName = 'Name must be at least 3 characters';
+    errors.fullName = 'O nome deve ter pelo menos 3 caracteres';
   }
 
   if (!isRequired(values.birthDate)) {
-    errors.birthDate = 'Birth date is required';
+    errors.birthDate = 'Data de nascimento é obrigatória';
   } else if (!isPastDate(values.birthDate)) {
-    errors.birthDate = 'Birth date must be in the past';
+    errors.birthDate = 'A data de nascimento deve ser no passado';
   } else if (!isMinAge(values.birthDate, 10)) {
-    errors.birthDate = 'Minimum age is 10 years';
+    errors.birthDate = 'Idade mínima é 10 anos';
   }
 
   if (!isRequired(values.phoneNumber)) {
-    errors.phoneNumber = 'Phone number is required';
+    errors.phoneNumber = 'Telefone é obrigatório';
   } else if (!isValidPhone(values.phoneNumber)) {
-    errors.phoneNumber = 'Invalid phone number format';
+    errors.phoneNumber = 'Formato de telefone inválido';
   }
 
   if (values.height && (values.height < 100 || values.height > 250)) {
-    errors.height = 'Height must be between 100 and 250 cm';
+    errors.height = 'A altura deve estar entre 100 e 250 cm';
   }
 
   return errors;

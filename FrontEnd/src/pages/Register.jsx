@@ -1,16 +1,125 @@
 import { useState } from 'react';
+import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useForm } from '../hooks/useForm';
-import { validateRegisterForm, getPasswordStrength } from '../utils/validators';
+import { validateRegisterForm } from '../utils/validators';
 import { formatCpf } from '../utils/formatters';
 import Input from '../components/common/Input';
 import Button from '../components/common/Button';
 import Alert from '../components/common/Alert';
 
-/**
- * Registration page
- */
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  min-height: 100vh;
+  padding: 24px;
+`;
+
+const FormWrapper = styled.div`
+  width: 100%;
+  max-width: 450px;
+`;
+
+const Header = styled.div`
+  text-align: center;
+  margin-bottom: 32px;
+`;
+
+const Title = styled.h1`
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+`;
+
+const Subtitle = styled.p`
+  font-size: 16px;
+  color: #666;
+  margin: 0;
+`;
+
+const FormCard = styled.div`
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  padding: 32px;
+`;
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+`;
+
+const InputWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+`;
+
+const PasswordHint = styled.p`
+  font-size: 12px;
+  color: #666;
+  margin: 4px 0 0 0;
+`;
+
+const Footer = styled.div`
+  margin-top: 24px;
+  text-align: center;
+`;
+
+const FooterText = styled.p`
+  color: #666;
+  margin: 0;
+`;
+
+const StyledLink = styled(Link)`
+  color: rgb(79, 105, 191);
+  font-weight: 500;
+  text-decoration: none;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+const SuccessContainer = styled.div`
+  max-width: 450px;
+  width: 100%;
+  text-align: center;
+`;
+
+const SuccessCard = styled.div`
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  padding: 48px 32px;
+`;
+
+const SuccessIcon = styled.div`
+  font-size: 64px;
+  margin-bottom: 16px;
+`;
+
+const SuccessTitle = styled.h1`
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+`;
+
+const SuccessMessage = styled.p`
+  color: #666;
+  margin: 0 0 24px 0;
+  line-height: 1.6;
+`;
+
+const Strong = styled.strong`
+  color: #333;
+`;
+
 function Register() {
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -31,10 +140,6 @@ function Register() {
     validateRegisterForm
   );
 
-  const passwordStrength = getPasswordStrength(values.password);
-  const strengthLabels = ['Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
-  const strengthColors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-500', 'bg-green-600'];
-
   const handleCpfChange = (e) => {
     const formatted = formatCpf(e.target.value);
     setFieldValue('cpf', formatted);
@@ -43,7 +148,6 @@ function Register() {
   const onSubmit = async (formValues) => {
     setServerError('');
     
-    // Remove formatting from CPF before sending
     const cpfNumbers = formValues.cpf.replace(/\D/g, '');
     
     const result = await register(
@@ -60,140 +164,118 @@ function Register() {
     }
   };
 
-  // Success message
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
-        <div className="max-w-md w-full text-center">
-          <div className="bg-white rounded-xl shadow-lg p-8">
-            <div className="text-6xl mb-4">✉️</div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Check your email!</h1>
-            <p className="text-gray-600 mb-6">
-              We sent a verification link to <strong>{values.email}</strong>. 
-              Please click the link to activate your account.
-            </p>
+      <Container>
+        <SuccessContainer>
+          <SuccessCard>
+            <SuccessIcon>✉️</SuccessIcon>
+            <SuccessTitle>Verifique seu e-mail!</SuccessTitle>
+            <SuccessMessage>
+              Enviamos um link de verificação para <Strong>{values.email}</Strong>. 
+              Por favor, clique no link para ativar sua conta.
+            </SuccessMessage>
             <Link to="/login">
-              <Button variant="outline">Go to Login</Button>
+              <Button>Ir para Login</Button>
             </Link>
-          </div>
-        </div>
-      </div>
+          </SuccessCard>
+        </SuccessContainer>
+      </Container>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4">
-      <div className="max-w-md w-full">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-block">
-            <span className="text-4xl">🏖️</span>
-          </Link>
-          <h1 className="mt-4 text-3xl font-bold text-gray-900">Create your account</h1>
-          <p className="mt-2 text-gray-600">Join the beach tennis community</p>
-        </div>
+    <Container>
+      <FormWrapper>
+        <Header>
+          <Title>Crie sua conta</Title>
+          <Subtitle>Participe da comunidade de Beach Tennis</Subtitle>
+        </Header>
 
-        {/* Form */}
-        <div className="bg-white rounded-xl shadow-lg p-8">
+        <FormCard>
           {serverError && (
             <Alert
               type="error"
               message={serverError}
               onClose={() => setServerError('')}
-              className="mb-6"
             />
           )}
 
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <Input
-              label="Email"
-              name="email"
-              type="email"
-              placeholder="your@email.com"
-              value={values.email}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={getFieldError('email')}
-              required
-            />
+          <Form onSubmit={handleSubmit(onSubmit)}>
+            <InputWrapper>
+              <Input
+                label="E-mail"
+                name="email"
+                type="email"
+                placeholder="Digite seu e-mail"
+                value={values.email}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={getFieldError('email')}
+                required
+              />
+            </InputWrapper>
 
-            <Input
-              label="CPF"
-              name="cpf"
-              type="text"
-              placeholder="123.456.789-10"
-              value={values.cpf}
-              onChange={handleCpfChange}
-              onBlur={handleBlur}
-              error={getFieldError('cpf')}
-              maxLength={14}
-              required
-            />
+            <InputWrapper>
+              <Input
+                label="CPF"
+                name="cpf"
+                type="text"
+                placeholder="Digite seu CPF"
+                value={values.cpf}
+                onChange={handleCpfChange}
+                onBlur={handleBlur}
+                error={getFieldError('cpf')}
+                maxLength={14}
+                required
+              />
+            </InputWrapper>
 
-            <Input
-              label="Password"
-              name="password"
-              type="password"
-              placeholder="••••••••"
-              value={values.password}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={getFieldError('password')}
-              required
-            />
+            <InputWrapper>
+              <Input
+                label="Senha"
+                name="password"
+                type="password"
+                placeholder="Digite sua senha"
+                value={values.password}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={getFieldError('password')}
+                required
+              />
+              {!getFieldError('password') && (
+                <PasswordHint>A senha deve ter pelo menos 8 caracteres</PasswordHint>
+              )}
+            </InputWrapper>
 
-            {/* Password Strength Indicator */}
-            {values.password && (
-              <div className="mb-4 -mt-2">
-                <div className="flex gap-1 mb-1">
-                  {[...Array(4)].map((_, i) => (
-                    <div
-                      key={i}
-                      className={`h-1 flex-1 rounded ${
-                        i < passwordStrength ? strengthColors[passwordStrength - 1] : 'bg-gray-200'
-                      }`}
-                    />
-                  ))}
-                </div>
-                <p className="text-xs text-gray-500">
-                  Password strength: {strengthLabels[passwordStrength]}
-                </p>
-              </div>
-            )}
+            <InputWrapper>
+              <Input
+                label="Confirme sua senha"
+                name="confirmPassword"
+                type="password"
+                placeholder="Digite sua senha novamente"
+                value={values.confirmPassword}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={getFieldError('confirmPassword')}
+                required
+              />
+            </InputWrapper>
 
-            <Input
-              label="Confirm Password"
-              name="confirmPassword"
-              type="password"
-              placeholder="••••••••"
-              value={values.confirmPassword}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={getFieldError('confirmPassword')}
-              required
-            />
-
-            <Button
-              type="submit"
-              fullWidth
-              loading={isSubmitting}
-              className="mt-2"
-            >
-              Create Account
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Criando...' : 'Criar conta'}
             </Button>
-          </form>
+          </Form>
 
-          <div className="mt-6 text-center">
-            <p className="text-gray-600">
-              Already have an account?{' '}
-              <Link to="/login" className="text-blue-600 hover:text-blue-700 font-medium">
-                Sign in
-              </Link>
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+          <Footer>
+            <FooterText>
+              Já possui uma conta?{' '}
+              <StyledLink to="/login">Entrar</StyledLink>
+            </FooterText>
+          </Footer>
+        </FormCard>
+      </FormWrapper>
+    </Container>
   );
 }
 
