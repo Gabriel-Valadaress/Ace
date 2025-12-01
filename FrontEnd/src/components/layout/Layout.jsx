@@ -1,20 +1,15 @@
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
-import Footer from './Footer';
 
-/**
- * Main layout wrapper for authenticated pages
- */
 function Layout() {
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div>
       <Header />
       
-      <main className="flex-grow container mx-auto px-4 py-8">
+      <main>
         <Outlet />
       </main>
       
-      <Footer />
     </div>
   );
 }

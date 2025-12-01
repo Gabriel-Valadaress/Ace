@@ -1,13 +1,158 @@
+import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useProfile } from '../context/ProfileContext';
 import Button from '../components/common/Button';
 import Loading from '../components/common/Loading';
-import Alert from '../components/common/Alert';
 
-/**
- * Dashboard page - main page after login
- */
+const Container = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+`;
+
+const WelcomeSection = styled.div`
+  margin-bottom: 32px;
+`;
+
+const Title = styled.h1`
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+`;
+
+const Subtitle = styled.p`
+  font-size: 16px;
+  color: #666;
+  margin: 0;
+`;
+
+const StatsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 32px;
+`;
+
+const StatCard = styled.div`
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+`;
+
+const StatLabel = styled.div`
+  font-size: 13px;
+  color: #999;
+  margin-bottom: 8px;
+`;
+
+const StatValue = styled.div`
+  font-size: 32px;
+  font-weight: 700;
+  color: ${props => props.color || '#333'};
+`;
+
+const ActionsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 32px;
+`;
+
+const Card = styled.div`
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+`;
+
+const CardTitle = styled.h2`
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+`;
+
+const ActionsList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+const ComingSoonItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+`;
+
+const ItemIcon = styled.span`
+  font-size: 24px;
+`;
+
+const ItemContent = styled.div`
+  flex: 1;
+`;
+
+const ItemTitle = styled.div`
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 2px;
+`;
+
+const ItemDescription = styled.div`
+  font-size: 13px;
+  color: #999;
+`;
+
+const CreateProfileCard = styled.div`
+  max-width: 500px;
+  margin: 0 auto;
+  text-align: center;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  padding: 48px 32px;
+`;
+
+const WelcomeIcon = styled.div`
+  font-size: 64px;
+  margin-bottom: 16px;
+`;
+
+const WelcomeTitle = styled.h1`
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+`;
+
+const WelcomeText = styled.p`
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 24px 0;
+  line-height: 1.5;
+`;
+
+const Record = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const WinCount = styled.span`
+  color: #22c55e;
+`;
+
+const Separator = styled.span`
+  color: #ccc;
+`;
+
+const LossCount = styled.span`
+  color: #ef4444;
+`;
+
 function Dashboard() {
   const { user } = useAuth();
   const { profile, loading, hasProfile } = useProfile();
@@ -16,120 +161,80 @@ function Dashboard() {
     return <Loading fullScreen />;
   }
 
-  // Prompt to create profile if not exists
   if (!hasProfile) {
     return (
-      <div className="max-w-2xl mx-auto text-center py-12">
-        <div className="bg-white rounded-xl shadow-lg p-8">
-          <div className="text-6xl mb-4">👋</div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Welcome to Beach Tennis!
-          </h1>
-          <p className="text-gray-600 mb-6">
-            Let's set up your player profile to get started. This will help other players find you and track your stats.
-          </p>
+      <Container>
+        <CreateProfileCard>
+          <WelcomeIcon>👋</WelcomeIcon>
+          <WelcomeTitle>Bem-vindo ao Beach Tennis!</WelcomeTitle>
+          <WelcomeText>
+            Vamos configurar seu perfil de jogador para começar. Isso ajudará outros jogadores a encontrá-lo e acompanhar suas estatísticas.
+          </WelcomeText>
           <Link to="/profile/create">
-            <Button size="large">Create Your Profile</Button>
+            <Button>Criar seu perfil</Button>
           </Link>
-        </div>
-      </div>
+        </CreateProfileCard>
+      </Container>
     );
   }
 
   return (
-    <div>
-      {/* Welcome Section */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">
-          Welcome back, {profile?.fullName?.split(' ')[0]}! 🏖️
-        </h1>
-        <p className="text-gray-600 mt-1">Here's an overview of your beach tennis journey.</p>
-      </div>
+    <Container>
+      <WelcomeSection>
+        <Title>Bem-vindo, {profile?.fullName?.split(' ')[0]}! 🏖️</Title>
+        <Subtitle>Aqui está uma visão geral da sua jornada no beach tennis.</Subtitle>
+      </WelcomeSection>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-xl shadow p-6">
-          <div className="text-sm text-gray-500 mb-1">Ranking</div>
-          <div className="text-3xl font-bold text-blue-600">
+      <StatsGrid>
+        <StatCard>
+          <StatLabel>Ranking</StatLabel>
+          <StatValue color="rgb(79, 105, 191)">
             #{profile?.ranking || 'N/A'}
-          </div>
-        </div>
+          </StatValue>
+        </StatCard>
 
-        <div className="bg-white rounded-xl shadow p-6">
-          <div className="text-sm text-gray-500 mb-1">Matches Played</div>
-          <div className="text-3xl font-bold text-gray-900">
-            {profile?.matchesPlayed || 0}
-          </div>
-        </div>
+        <StatCard>
+          <StatLabel>Partidas jogadas</StatLabel>
+          <StatValue>{profile?.matchesPlayed || 0}</StatValue>
+        </StatCard>
 
-        <div className="bg-white rounded-xl shadow p-6">
-          <div className="text-sm text-gray-500 mb-1">Win Rate</div>
-          <div className="text-3xl font-bold text-green-600">
+        <StatCard>
+          <StatLabel>Taxa de vitória</StatLabel>
+          <StatValue color="#22c55e">
             {profile?.winRate?.toFixed(1) || 0}%
-          </div>
-        </div>
+          </StatValue>
+        </StatCard>
 
-        <div className="bg-white rounded-xl shadow p-6">
-          <div className="text-sm text-gray-500 mb-1">Record</div>
-          <div className="text-3xl font-bold text-gray-900">
-            <span className="text-green-600">{profile?.winsCount || 0}</span>
-            <span className="text-gray-400 mx-1">-</span>
-            <span className="text-red-600">{profile?.lossesCount || 0}</span>
-          </div>
-        </div>
-      </div>
+        <StatCard>
+          <StatLabel>Histórico</StatLabel>
+          <StatValue>
+            <Record>
+              <WinCount>{profile?.winsCount || 0}</WinCount>
+              <Separator>-</Separator>
+              <LossCount>{profile?.lossesCount || 0}</LossCount>
+            </Record>
+          </StatValue>
+        </StatCard>
+      </StatsGrid>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white rounded-xl shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
-          <div className="flex flex-col gap-3">
+      <ActionsGrid>
+        <Card>
+          <CardTitle>Ações rápidas</CardTitle>
+          <ActionsList>
             <Link to="/players">
-              <Button variant="outline" fullWidth className="justify-start">
-                🔍 Find Players
-              </Button>
+              <Button>🔍 Encontrar jogadores</Button>
             </Link>
             <Link to="/profile">
-              <Button variant="outline" fullWidth className="justify-start">
-                👤 View My Profile
-              </Button>
+              <Button>👤 Ver meu perfil</Button>
             </Link>
             <Link to="/profile/edit">
-              <Button variant="outline" fullWidth className="justify-start">
-                ✏️ Edit Profile
-              </Button>
+              <Button>✏️ Editar perfil</Button>
             </Link>
-          </div>
-        </div>
+          </ActionsList>
+        </Card>
 
-        <div className="bg-white rounded-xl shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Coming Soon</h2>
-          <div className="space-y-3 text-gray-600">
-            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-              <span className="text-2xl">🏆</span>
-              <div>
-                <div className="font-medium">Tournaments</div>
-                <div className="text-sm text-gray-500">Find and register for tournaments</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-              <span className="text-2xl">📊</span>
-              <div>
-                <div className="font-medium">Match History</div>
-                <div className="text-sm text-gray-500">View your complete match history</div>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-              <span className="text-2xl">🤝</span>
-              <div>
-                <div className="font-medium">Head-to-Head</div>
-                <div className="text-sm text-gray-500">Compare stats with other players</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+      </ActionsGrid>
+    </Container>
   );
 }
 

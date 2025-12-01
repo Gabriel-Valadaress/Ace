@@ -8,9 +8,7 @@ import Input from '../components/common/Input';
 import Button from '../components/common/Button';
 import Alert from '../components/common/Alert';
 
-/**
- * Create profile page
- */
+
 function CreateProfile() {
   const { createProfile } = useProfile();
   const navigate = useNavigate();
@@ -37,7 +35,6 @@ function CreateProfile() {
   const onSubmit = async (formValues) => {
     setServerError('');
     
-    // Remove formatting from phone
     const phoneNumbers = formValues.phoneNumber.replace(/\D/g, '');
     
     const result = await createProfile({
@@ -55,30 +52,29 @@ function CreateProfile() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Create Your Profile</h1>
-        <p className="text-gray-600 mt-1">
-          Fill in your information to complete your player profile.
+    <div>
+      <div>
+        <h1>Crie seu pefil</h1>
+        <p>
+          Preencha as informações abaixo para completar o seu perfil de jogador(a)
         </p>
       </div>
 
-      <div className="bg-white rounded-xl shadow-lg p-8">
+      <div>
         {serverError && (
           <Alert
             type="error"
             message={serverError}
             onClose={() => setServerError('')}
-            className="mb-6"
           />
         )}
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <Input
-            label="Full Name"
+            label="Nome completo"
             name="fullName"
             type="text"
-            placeholder="John Silva"
+            placeholder="Digite seu nome completo"
             value={values.fullName}
             onChange={handleChange}
             onBlur={handleBlur}
@@ -87,7 +83,7 @@ function CreateProfile() {
           />
 
           <Input
-            label="Birth Date"
+            label="Data de nascimento"
             name="birthDate"
             type="date"
             value={values.birthDate}
@@ -98,10 +94,10 @@ function CreateProfile() {
           />
 
           <Input
-            label="Phone Number"
+            label="Número de celular"
             name="phoneNumber"
             type="tel"
-            placeholder="(51) 99999-9999"
+            placeholder="(999) 99999-9999"
             value={values.phoneNumber}
             onChange={handlePhoneChange}
             onBlur={handleBlur}
@@ -111,7 +107,7 @@ function CreateProfile() {
           />
 
           <Input
-            label="Height (cm)"
+            label="Altura (cm)"
             name="height"
             type="number"
             placeholder="180"
@@ -129,14 +125,14 @@ function CreateProfile() {
               variant="outline"
               onClick={() => navigate('/dashboard')}
             >
-              Skip for Now
+              Deixar para depois
             </Button>
             <Button
               type="submit"
               loading={isSubmitting}
               className="flex-grow"
             >
-              Create Profile
+              Atualizar Perfil
             </Button>
           </div>
         </form>
