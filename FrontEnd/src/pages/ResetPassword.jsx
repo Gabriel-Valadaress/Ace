@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useForm } from '../hooks/useForm';
-import { isValidPassword } from '../utils/validators';
+import { validateResetPasswordForm } from '../utils/validators';
 import Input from '../components/common/Input';
 import Button from '../components/common/Button';
 import Alert from '../components/common/Alert';
@@ -24,6 +24,9 @@ const FormCard = styled.div`
   padding: 32px;
   width: 100%;
   max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const Title = styled.h1`
@@ -70,21 +73,6 @@ function ResetPassword() {
   const email = searchParams.get('email');
   const token = searchParams.get('token');
 
-  const validate = (values) => {
-    const errors = {};
-    if (!values.password) {
-      errors.password = 'Senha é obrigatória';
-    } else if (!isValidPassword(values.password)) {
-      errors.password = 'A senha deve ter pelo menos 8 caracteres, uma letra maiúscula, uma minúscula e um número';
-    }
-    if (!values.confirmPassword) {
-      errors.confirmPassword = 'Confirmação de senha é obrigatória';
-    } else if (values.password !== values.confirmPassword) {
-      errors.confirmPassword = 'As senhas não coincidem';
-    }
-    return errors;
-  };
-
   const {
     values,
     isSubmitting,
@@ -92,7 +80,7 @@ function ResetPassword() {
     handleBlur,
     handleSubmit,
     getFieldError,
-  } = useForm({ password: '', confirmPassword: '' }, validate);
+  } = useForm({ password: '', confirmPassword: '' }, validateResetPasswordForm);
 
   const onSubmit = async (formValues) => {
     setServerError('');
@@ -195,8 +183,8 @@ function ResetPassword() {
             required
           />
 
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Redefinindo...' : 'Redefinir senha'}
+          <Button type="submit" loading={isSubmitting}>
+            Redefinir senha
           </Button>
         </Form>
       </FormCard>

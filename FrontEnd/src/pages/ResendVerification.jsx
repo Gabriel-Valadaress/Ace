@@ -95,6 +95,19 @@ const TextButton = styled.button`
   }
 `;
 
+const ButtonWrapper = styled.div`
+  width: 100%;
+  
+  button, a {
+    width: 100%;
+  }
+  
+  a {
+    text-decoration: none;
+    display: block;
+  }
+`;
+
 function ResendVerification() {
   const [serverError, setServerError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -120,10 +133,10 @@ function ResendVerification() {
 
   const onSubmit = async (formValues) => {
     setServerError('');
-    
+
     try {
       const response = await authService.resendVerification(formValues.email);
-      
+
       if (response.success) {
         setSuccess(true);
       } else {
@@ -141,19 +154,21 @@ function ResendVerification() {
           <SuccessIcon>📧</SuccessIcon>
           <Title>E-mail enviado!</Title>
           <Subtitle>
-            Enviamos um novo link de verificação para <strong>{values.email}</strong>. 
+            Enviamos um novo link de verificação para <strong>{values.email}</strong>.
             Verifique sua caixa de entrada e clique no link.
           </Subtitle>
           <ButtonGroup>
-            <Link to="/login">
-              <Button>Ir para Login</Button>
-            </Link>
+            <ButtonWrapper>
+              <Link to="/login">
+                <Button>Ir para Login</Button>
+              </Link>
+            </ButtonWrapper>
             <TextButton onClick={() => setSuccess(false)}>
               Enviar para outro e-mail
             </TextButton>
           </ButtonGroup>
         </FormCard>
-      </Container>
+      </Container >
     );
   }
 

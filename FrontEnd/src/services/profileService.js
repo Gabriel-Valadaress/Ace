@@ -1,17 +1,11 @@
 import api from './api';
 
 const profileService = {
-  /**
-   * Get current user's profile
-   */
   async getMyProfile() {
     const response = await api.get('/profiles/me');
     return response.data;
   },
 
-  /**
-   * Create profile for current user
-   */
   async createProfile(profileData) {
     const response = await api.post('/profiles/me', {
       fullName: profileData.fullName,
@@ -22,9 +16,6 @@ const profileService = {
     return response.data;
   },
 
-  /**
-   * Update current user's profile
-   */
   async updateProfile(profileData) {
     const response = await api.put('/profiles/me', {
       fullName: profileData.fullName,
@@ -35,9 +26,6 @@ const profileService = {
     return response.data;
   },
 
-  /**
-   * Upload profile photo
-   */
   async uploadPhoto(file) {
     const formData = new FormData();
     formData.append('file', file);
@@ -50,17 +38,11 @@ const profileService = {
     return response.data;
   },
 
-  /**
-   * Get player profile by ID
-   */
   async getPlayerProfile(userId) {
     const response = await api.get(`/profiles/${userId}`);
     return response.data;
   },
 
-  /**
-   * Search players by name
-   */
   async searchPlayers(query, page = 1, pageSize = 20) {
     const response = await api.get('/profiles/search', {
       params: { query, page, pageSize },
@@ -68,9 +50,6 @@ const profileService = {
     return response.data;
   },
 
-  /**
-   * Check if current user has a profile
-   */
   async hasProfile() {
     try {
       const response = await api.get('/profiles/me');

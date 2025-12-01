@@ -69,6 +69,15 @@ const SuccessIcon = styled.div`
   text-align: center;
 `;
 
+// 🔧 SOLUÇÃO: Wrapper para centralizar botão quando necessário
+const ButtonWrapper = styled.div`
+  width: 100%;
+  
+  button {
+    width: 100%;
+  }
+`;
+
 function ForgotPassword() {
   const { forgotPassword } = useAuth();
   const [serverError, setServerError] = useState('');
@@ -115,9 +124,11 @@ function ForgotPassword() {
             Enviamos um link de redefinição de senha para <strong>{values.email}</strong>. 
             Clique no link para redefinir sua senha.
           </Subtitle>
-          <Link to="/login">
-            <Button>Voltar para Login</Button>
-          </Link>
+          <ButtonWrapper>
+            <Link to="/login" style={{ textDecoration: 'none', display: 'block' }}>
+              <Button>Voltar para Login</Button>
+            </Link>
+          </ButtonWrapper>
         </FormCard>
       </Container>
     );

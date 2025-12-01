@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 import { useProfile } from '../context/ProfileContext';
 import { useForm } from '../hooks/useForm';
 import { validateProfileForm } from '../utils/validators';
@@ -8,6 +9,82 @@ import Input from '../components/common/Input';
 import Button from '../components/common/Button';
 import Alert from '../components/common/Alert';
 
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 24px;
+`;
+
+const FormCard = styled.div`
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  padding: 32px;
+  width: 100%;
+  max-width: 500px;
+`;
+
+const Header = styled.div`
+  text-align: center;
+  margin-bottom: 32px;
+`;
+
+const Icon = styled.div`
+  font-size: 64px;
+  margin-bottom: 16px;
+`;
+
+const Title = styled.h1`
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  color: #111;
+`;
+
+const Subtitle = styled.p`
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+  line-height: 1.5;
+`;
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  flex-direction: column;
+
+  @media (min-width: 640px) {
+    flex-direction: row;
+  }
+
+  button {
+    width: 100%;
+  }
+`;
+
+const SecondaryButton = styled(Button)`
+  background: white;
+  color: rgb(79, 105, 191);
+  border: 2px solid rgb(79, 105, 191);
+
+  &:hover {
+    background: #f9fafb;
+  }
+
+  &:active {
+    background: #f3f4f6;
+  }
+`;
 
 function CreateProfile() {
   const { createProfile } = useProfile();
@@ -52,15 +129,16 @@ function CreateProfile() {
   };
 
   return (
-    <div>
-      <div>
-        <h1>Crie seu pefil</h1>
-        <p>
-          Preencha as informações abaixo para completar o seu perfil de jogador(a)
-        </p>
-      </div>
+    <Container>
+      <FormCard>
+        <Header>
+          <Icon>👤</Icon>
+          <Title>Crie seu perfil</Title>
+          <Subtitle>
+            Preencha as informações abaixo para completar o seu perfil de jogador(a)
+          </Subtitle>
+        </Header>
 
-      <div>
         {serverError && (
           <Alert
             type="error"
@@ -69,7 +147,7 @@ function CreateProfile() {
           />
         )}
 
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <Form onSubmit={handleSubmit(onSubmit)}>
           <Input
             label="Nome completo"
             name="fullName"
@@ -97,7 +175,7 @@ function CreateProfile() {
             label="Número de celular"
             name="phoneNumber"
             type="tel"
-            placeholder="(999) 99999-9999"
+            placeholder="(51) 99999-9999"
             value={values.phoneNumber}
             onChange={handlePhoneChange}
             onBlur={handleBlur}
@@ -119,25 +197,23 @@ function CreateProfile() {
             max={250}
           />
 
-          <div className="flex gap-4 mt-6">
-            <Button
+          <ButtonGroup>
+            <SecondaryButton
               type="button"
-              variant="outline"
               onClick={() => navigate('/dashboard')}
             >
               Deixar para depois
-            </Button>
+            </SecondaryButton>
             <Button
               type="submit"
               loading={isSubmitting}
-              className="flex-grow"
             >
-              Atualizar Perfil
+              Criar Perfil
             </Button>
-          </div>
-        </form>
-      </div>
-    </div>
+          </ButtonGroup>
+        </Form>
+      </FormCard>
+    </Container>
   );
 }
 

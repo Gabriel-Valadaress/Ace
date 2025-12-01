@@ -85,6 +85,14 @@ const SuccessIcon = styled.div`
   margin-bottom: 16px;
 `;
 
+const ButtonWrapper = styled.div`
+  width: 100%;
+  
+  button {
+    width: 100%;
+  }
+`;
+
 function Register() {
   const { register } = useAuth();
   const [serverError, setServerError] = useState('');
@@ -136,9 +144,11 @@ function Register() {
           <Subtitle style={{ marginBottom: '24px' }}>
             Enviamos um link de verificação para <strong>{values.email}</strong>
           </Subtitle>
-          <Link to="/login">
-            <Button>Ir para Login</Button>
-          </Link>
+          <ButtonWrapper>
+            <Link to="/login" style={{ textDecoration: 'none', display: 'block' }}>
+              <Button>Ir para Login</Button>
+            </Link>
+          </ButtonWrapper>
         </SuccessCard>
       </Container>
     );

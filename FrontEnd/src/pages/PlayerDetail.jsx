@@ -1,14 +1,278 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import styled from 'styled-components';
 import profileService from '../services/profileService';
 import { formatDate, formatHeight, formatPhone, getInitials } from '../utils/formatters';
 import Button from '../components/common/Button';
 import Loading from '../components/common/Loading';
 import Alert from '../components/common/Alert';
 
-/**
- * Player detail page - view another player's profile
- */
+const Container = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+`;
+
+const BackLink = styled(Link)`
+  display: inline-flex;
+  align-items: center;
+  color: #666;
+  text-decoration: none;
+  margin-bottom: 24px;
+  font-size: 14px;
+
+  &:hover {
+    color: #333;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+    margin-right: 4px;
+  }
+`;
+
+const ProfileCard = styled.div`
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin-bottom: 24px;
+`;
+
+const CoverImage = styled.div`
+  height: 128px;
+  background: linear-gradient(135deg, #14b8a6 0%, #3b82f6 100%);
+`;
+
+const ProfileContent = styled.div`
+  padding: 0 24px 24px;
+`;
+
+const ProfileHeader = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: -48px;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: flex-end;
+  }
+`;
+
+const AvatarWrapper = styled.div`
+  flex-shrink: 0;
+`;
+
+const Avatar = styled.div`
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: #14b8a6;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 700;
+  border: 4px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+`;
+
+const AvatarImage = styled.img`
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+`;
+
+const InfoSection = styled.div`
+  flex-grow: 1;
+  margin-top: 16px;
+
+  @media (min-width: 768px) {
+    margin-top: 0;
+  }
+`;
+
+const PlayerName = styled.h1`
+  font-size: 24px;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 4px 0;
+`;
+
+const PlayerAge = styled.p`
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+`;
+
+const StatsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+`;
+
+const StatCard = styled.div`
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  text-align: center;
+`;
+
+const StatValue = styled.div`
+  font-size: 24px;
+  font-weight: 700;
+  color: ${props => props.color || '#111'};
+  margin-bottom: 4px;
+`;
+
+const StatLabel = styled.div`
+  font-size: 13px;
+  color: #666;
+`;
+
+const Section = styled.div`
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  margin-bottom: 24px;
+`;
+
+const SectionTitle = styled.h2`
+  font-size: 18px;
+  font-weight: 600;
+  color: #111;
+  margin: 0 0 20px 0;
+`;
+
+const DetailsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 16px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+`;
+
+const DetailItem = styled.div``;
+
+const DetailLabel = styled.div`
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 4px;
+`;
+
+const DetailValue = styled.div`
+  font-size: 15px;
+  color: #111;
+`;
+
+const ProgressWrapper = styled.div`
+  margin-bottom: 16px;
+`;
+
+const ProgressHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 8px;
+`;
+
+const ProgressBar = styled.div`
+  width: 100%;
+  height: 10px;
+  background: #e5e7eb;
+  border-radius: 5px;
+  overflow: hidden;
+`;
+
+const ProgressFill = styled.div`
+  height: 100%;
+  background: #22c55e;
+  width: ${props => props.width}%;
+  transition: width 0.3s;
+`;
+
+const RecordGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 20px;
+`;
+
+const RecordCard = styled.div`
+  background: ${props => props.bgColor || '#f9fafb'};
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+`;
+
+const RecordValue = styled.div`
+  font-size: 24px;
+  font-weight: 700;
+  color: ${props => props.color || '#111'};
+  margin-bottom: 4px;
+`;
+
+const RecordLabel = styled.div`
+  font-size: 13px;
+  color: ${props => props.color || '#666'};
+`;
+
+const EmptyState = styled.div`
+  text-align: center;
+  padding: 48px 24px;
+`;
+
+const EmptyIcon = styled.div`
+  font-size: 48px;
+  margin-bottom: 16px;
+`;
+
+const EmptyText = styled.p`
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+`;
+
+const ErrorContainer = styled.div`
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 48px 24px;
+`;
+
+const ErrorIcon = styled.div`
+  font-size: 64px;
+  margin-bottom: 16px;
+`;
+
+const ErrorTitle = styled.h1`
+  font-size: 24px;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 8px 0;
+`;
+
+const ErrorMessage = styled.p`
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 24px 0;
+`;
+
 function PlayerDetail() {
   const { userId } = useParams();
   const [player, setPlayer] = useState(null);
@@ -31,7 +295,7 @@ function PlayerDetail() {
           setError(response.message);
         }
       } catch (err) {
-        setError(err.response?.data?.message || 'Failed to load player profile');
+        setError(err.response?.data?.message || 'Falha ao carregar perfil do jogador');
       } finally {
         setLoading(false);
       }
@@ -46,157 +310,138 @@ function PlayerDetail() {
 
   if (error) {
     return (
-      <div className="max-w-2xl mx-auto text-center py-12">
-        <Alert type="error" message={error} className="mb-6" />
+      <ErrorContainer>
+        <Alert type="error" message={error} />
         <Link to="/players">
-          <Button variant="outline">Back to Players</Button>
+          <Button>Voltar para Jogadores</Button>
         </Link>
-      </div>
+      </ErrorContainer>
     );
   }
 
   if (!player) {
     return (
-      <div className="max-w-2xl mx-auto text-center py-12">
-        <div className="text-6xl mb-4">🤷</div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Player Not Found</h1>
-        <p className="text-gray-600 mb-6">This player profile doesn't exist.</p>
+      <ErrorContainer>
+        <ErrorIcon>🤷</ErrorIcon>
+        <ErrorTitle>Jogador Não Encontrado</ErrorTitle>
+        <ErrorMessage>Este perfil de jogador não existe.</ErrorMessage>
         <Link to="/players">
-          <Button variant="outline">Back to Players</Button>
+          <Button>Voltar para Jogadores</Button>
         </Link>
-      </div>
+      </ErrorContainer>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
-      {/* Back Button */}
-      <Link
-        to="/players"
-        className="inline-flex items-center text-gray-600 hover:text-gray-900 mb-6"
-      >
-        <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <Container>
+      <BackLink to="/players">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
-        Back to Players
-      </Link>
+        Voltar para Jogadores
+      </BackLink>
 
-      {/* Profile Header */}
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-        {/* Cover */}
-        <div className="h-32 bg-gradient-to-r from-teal-500 to-blue-500" />
+      <ProfileCard>
+        <CoverImage />
         
-        {/* Profile Info */}
-        <div className="px-6 pb-6">
-          <div className="flex flex-col md:flex-row md:items-end gap-4 -mt-12">
-            {/* Avatar */}
-            <div className="flex-shrink-0">
+        <ProfileContent>
+          <ProfileHeader>
+            <AvatarWrapper>
               {player?.photoUrl ? (
-                <img
+                <AvatarImage
                   src={`${apiBaseUrl}/${player.photoUrl}`}
                   alt={player.fullName}
-                  className="w-24 h-24 rounded-full border-4 border-white shadow-lg object-cover"
                 />
               ) : (
-                <div className="w-24 h-24 rounded-full border-4 border-white shadow-lg bg-teal-600 text-white flex items-center justify-center text-2xl font-bold">
+                <Avatar>
                   {getInitials(player?.fullName)}
-                </div>
+                </Avatar>
               )}
-            </div>
+            </AvatarWrapper>
 
-            {/* Name */}
-            <div className="flex-grow mt-2 md:mt-0">
-              <h1 className="text-2xl font-bold text-gray-900">{player?.fullName}</h1>
-              <p className="text-gray-500">{player?.age} years old</p>
-            </div>
-          </div>
-        </div>
-      </div>
+            <InfoSection>
+              <PlayerName>{player?.fullName}</PlayerName>
+              <PlayerAge>{player?.age} anos</PlayerAge>
+            </InfoSection>
+          </ProfileHeader>
+        </ProfileContent>
+      </ProfileCard>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-        <div className="bg-white rounded-xl shadow p-4 text-center">
-          <div className="text-2xl font-bold text-blue-600">#{player?.ranking || 'N/A'}</div>
-          <div className="text-sm text-gray-500">Ranking</div>
-        </div>
-        <div className="bg-white rounded-xl shadow p-4 text-center">
-          <div className="text-2xl font-bold text-gray-900">{player?.matchesPlayed || 0}</div>
-          <div className="text-sm text-gray-500">Matches</div>
-        </div>
-        <div className="bg-white rounded-xl shadow p-4 text-center">
-          <div className="text-2xl font-bold text-green-600">{player?.winsCount || 0}</div>
-          <div className="text-sm text-gray-500">Wins</div>
-        </div>
-        <div className="bg-white rounded-xl shadow p-4 text-center">
-          <div className="text-2xl font-bold text-green-600">{player?.winRate?.toFixed(1) || 0}%</div>
-          <div className="text-sm text-gray-500">Win Rate</div>
-        </div>
-      </div>
+      <StatsGrid>
+        <StatCard>
+          <StatValue color="rgb(79, 105, 191)">#{player?.ranking || 'N/A'}</StatValue>
+          <StatLabel>Ranking</StatLabel>
+        </StatCard>
+        <StatCard>
+          <StatValue>{player?.matchesPlayed || 0}</StatValue>
+          <StatLabel>Partidas</StatLabel>
+        </StatCard>
+        <StatCard>
+          <StatValue color="#22c55e">{player?.winsCount || 0}</StatValue>
+          <StatLabel>Vitórias</StatLabel>
+        </StatCard>
+        <StatCard>
+          <StatValue color="#22c55e">{player?.winRate?.toFixed(1) || 0}%</StatValue>
+          <StatLabel>Taxa de Vitória</StatLabel>
+        </StatCard>
+      </StatsGrid>
 
-      {/* Profile Details */}
-      <div className="bg-white rounded-xl shadow-lg p-6 mt-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Player Details</h2>
+      <Section>
+        <SectionTitle>Detalhes do Jogador</SectionTitle>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <div className="text-sm text-gray-500">Full Name</div>
-            <div className="text-gray-900">{player?.fullName}</div>
-          </div>
-          <div>
-            <div className="text-sm text-gray-500">Age</div>
-            <div className="text-gray-900">{player?.age} years old</div>
-          </div>
-          <div>
-            <div className="text-sm text-gray-500">Height</div>
-            <div className="text-gray-900">{player?.height ? formatHeight(player.height) : 'Not specified'}</div>
-          </div>
-          <div>
-            <div className="text-sm text-gray-500">Total Matches</div>
-            <div className="text-gray-900">{player?.matchesPlayed || 0}</div>
-          </div>
-        </div>
-      </div>
+        <DetailsGrid>
+          <DetailItem>
+            <DetailLabel>Nome Completo</DetailLabel>
+            <DetailValue>{player?.fullName}</DetailValue>
+          </DetailItem>
+          <DetailItem>
+            <DetailLabel>Idade</DetailLabel>
+            <DetailValue>{player?.age} anos</DetailValue>
+          </DetailItem>
+          <DetailItem>
+            <DetailLabel>Altura</DetailLabel>
+            <DetailValue>{player?.height ? formatHeight(player.height) : 'Não especificado'}</DetailValue>
+          </DetailItem>
+          <DetailItem>
+            <DetailLabel>Total de Partidas</DetailLabel>
+            <DetailValue>{player?.matchesPlayed || 0}</DetailValue>
+          </DetailItem>
+        </DetailsGrid>
+      </Section>
 
-      {/* Stats Breakdown */}
-      <div className="bg-white rounded-xl shadow-lg p-6 mt-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Statistics</h2>
+      <Section>
+        <SectionTitle>Estatísticas</SectionTitle>
         
-        <div className="space-y-4">
-          <div>
-            <div className="flex justify-between text-sm mb-1">
-              <span className="text-gray-500">Win Rate</span>
-              <span className="font-medium">{player?.winRate?.toFixed(1) || 0}%</span>
-            </div>
-            <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-green-500 rounded-full"
-                style={{ width: `${player?.winRate || 0}%` }}
-              />
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4 pt-4">
-            <div className="text-center p-4 bg-green-50 rounded-lg">
-              <div className="text-2xl font-bold text-green-600">{player?.winsCount || 0}</div>
-              <div className="text-sm text-green-700">Victories</div>
-            </div>
-            <div className="text-center p-4 bg-red-50 rounded-lg">
-              <div className="text-2xl font-bold text-red-600">{player?.lossesCount || 0}</div>
-              <div className="text-sm text-red-700">Defeats</div>
-            </div>
-          </div>
-        </div>
-      </div>
+        <ProgressWrapper>
+          <ProgressHeader>
+            <span>Taxa de Vitória</span>
+            <span>{player?.winRate?.toFixed(1) || 0}%</span>
+          </ProgressHeader>
+          <ProgressBar>
+            <ProgressFill width={player?.winRate || 0} />
+          </ProgressBar>
+        </ProgressWrapper>
 
-      {/* Coming Soon - Head to Head */}
-      <div className="bg-white rounded-xl shadow-lg p-6 mt-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Head-to-Head</h2>
-        <div className="text-center py-8 text-gray-500">
-          <div className="text-4xl mb-2">🤝</div>
-          <p>Head-to-head comparison coming soon!</p>
-        </div>
-      </div>
-    </div>
+        <RecordGrid>
+          <RecordCard bgColor="#f0fdf4">
+            <RecordValue color="#22c55e">{player?.winsCount || 0}</RecordValue>
+            <RecordLabel color="#166534">Vitórias</RecordLabel>
+          </RecordCard>
+          <RecordCard bgColor="#fef2f2">
+            <RecordValue color="#ef4444">{player?.lossesCount || 0}</RecordValue>
+            <RecordLabel color="#991b1b">Derrotas</RecordLabel>
+          </RecordCard>
+        </RecordGrid>
+      </Section>
+
+      <Section>
+        <SectionTitle>Head-to-Head</SectionTitle>
+        <EmptyState>
+          <EmptyIcon>🤝</EmptyIcon>
+          <EmptyText>Comparação head-to-head em breve!</EmptyText>
+        </EmptyState>
+      </Section>
+    </Container>
   );
 }
 

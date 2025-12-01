@@ -52,11 +52,22 @@ const ButtonGroup = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
+  width: 100%;
 `;
 
-/**
- * Email verification page
- */
+const ButtonWrapper = styled.div`
+  width: 100%;
+  
+  button, a {
+    width: 100%;
+  }
+  
+  a {
+    text-decoration: none;
+    display: block;
+  }
+`;
+
 function VerifyEmail() {
   const [searchParams] = useSearchParams();
   const { verifyEmail } = useAuth();
@@ -104,9 +115,11 @@ function VerifyEmail() {
             <Icon>✅</Icon>
             <Title>E-mail verificado!</Title>
             <Message>{message}</Message>
-            <Link to="/login">
-              <Button>Ir para Login</Button>
-            </Link>
+            <ButtonWrapper>
+              <Link to="/login">
+                <Button>Ir para Login</Button>
+              </Link>
+            </ButtonWrapper>
           </>
         )}
 
@@ -116,12 +129,16 @@ function VerifyEmail() {
             <Title>Verificação falhou</Title>
             <Message>{message}</Message>
             <ButtonGroup>
-              <Link to="/login">
-                <Button>Ir para Login</Button>
-              </Link>
-              <Link to="/register">
-                <Button>Criar nova conta</Button>
-              </Link>
+              <ButtonWrapper>
+                <Link to="/login">
+                  <Button>Ir para Login</Button>
+                </Link>
+              </ButtonWrapper>
+              <ButtonWrapper>
+                <Link to="/register">
+                  <Button>Criar nova conta</Button>
+                </Link>
+              </ButtonWrapper>
             </ButtonGroup>
           </>
         )}

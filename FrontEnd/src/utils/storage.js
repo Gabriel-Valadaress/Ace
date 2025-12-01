@@ -1,12 +1,5 @@
-/**
- * Local storage utility functions with JSON support
- */
-
 const PREFIX = 'beachtennis_';
 
-/**
- * Get item from localStorage
- */
 export const getItem = (key) => {
   try {
     const item = localStorage.getItem(PREFIX + key);
@@ -17,9 +10,6 @@ export const getItem = (key) => {
   }
 };
 
-/**
- * Set item in localStorage
- */
 export const setItem = (key, value) => {
   try {
     localStorage.setItem(PREFIX + key, JSON.stringify(value));
@@ -30,9 +20,6 @@ export const setItem = (key, value) => {
   }
 };
 
-/**
- * Remove item from localStorage
- */
 export const removeItem = (key) => {
   try {
     localStorage.removeItem(PREFIX + key);
@@ -43,9 +30,6 @@ export const removeItem = (key) => {
   }
 };
 
-/**
- * Clear all items with prefix from localStorage
- */
 export const clear = () => {
   try {
     Object.keys(localStorage)
@@ -58,9 +42,6 @@ export const clear = () => {
   }
 };
 
-/**
- * Check if localStorage is available
- */
 export const isAvailable = () => {
   try {
     const test = '__storage_test__';
@@ -72,13 +53,6 @@ export const isAvailable = () => {
   }
 };
 
-// ============================================================
-// Session Storage (clears when browser closes)
-// ============================================================
-
-/**
- * Get item from sessionStorage
- */
 export const getSessionItem = (key) => {
   try {
     const item = sessionStorage.getItem(PREFIX + key);
@@ -89,9 +63,6 @@ export const getSessionItem = (key) => {
   }
 };
 
-/**
- * Set item in sessionStorage
- */
 export const setSessionItem = (key, value) => {
   try {
     sessionStorage.setItem(PREFIX + key, JSON.stringify(value));
@@ -102,9 +73,6 @@ export const setSessionItem = (key, value) => {
   }
 };
 
-/**
- * Remove item from sessionStorage
- */
 export const removeSessionItem = (key) => {
   try {
     sessionStorage.removeItem(PREFIX + key);
@@ -115,72 +83,40 @@ export const removeSessionItem = (key) => {
   }
 };
 
-// ============================================================
-// Token Storage (for auth)
-// ============================================================
-
 const TOKEN_KEY = 'accessToken';
 
-/**
- * Get access token
- */
 export const getToken = () => {
   return localStorage.getItem(TOKEN_KEY);
 };
 
-/**
- * Set access token
- */
 export const setToken = (token) => {
   localStorage.setItem(TOKEN_KEY, token);
 };
 
-/**
- * Remove access token
- */
 export const removeToken = () => {
   localStorage.removeItem(TOKEN_KEY);
 };
 
-/**
- * Check if user has token (is logged in)
- */
 export const hasToken = () => {
   return !!getToken();
 };
 
-// ============================================================
-// User Preferences
-// ============================================================
-
 const PREFERENCES_KEY = 'preferences';
 
-/**
- * Get user preferences
- */
 export const getPreferences = () => {
   return getItem(PREFERENCES_KEY) || {};
 };
 
-/**
- * Set user preferences
- */
 export const setPreferences = (preferences) => {
   return setItem(PREFERENCES_KEY, preferences);
 };
 
-/**
- * Update single preference
- */
 export const updatePreference = (key, value) => {
   const prefs = getPreferences();
   prefs[key] = value;
   return setPreferences(prefs);
 };
 
-/**
- * Get single preference
- */
 export const getPreference = (key, defaultValue = null) => {
   const prefs = getPreferences();
   return prefs[key] ?? defaultValue;

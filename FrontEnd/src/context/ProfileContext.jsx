@@ -2,10 +2,8 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import profileService from '../services/profileService';
 
-// Create context
 const ProfileContext = createContext(null);
 
-// Provider component
 export function ProfileProvider({ children }) {
   const { isAuthenticated, user } = useAuth();
   const [profile, setProfile] = useState(null);
@@ -13,7 +11,6 @@ export function ProfileProvider({ children }) {
   const [error, setError] = useState(null);
   const [hasProfile, setHasProfile] = useState(false);
 
-  // Fetch profile when authenticated
   useEffect(() => {
     if (isAuthenticated) {
       fetchProfile();
@@ -23,7 +20,6 @@ export function ProfileProvider({ children }) {
     }
   }, [isAuthenticated]);
 
-  // Fetch current user's profile
   const fetchProfile = async () => {
     try {
       setLoading(true);
@@ -37,7 +33,6 @@ export function ProfileProvider({ children }) {
       }
     } catch (err) {
       if (err.response?.status === 404) {
-        // Profile doesn't exist yet
         setProfile(null);
         setHasProfile(false);
       } else {
@@ -49,7 +44,6 @@ export function ProfileProvider({ children }) {
     }
   };
 
-  // Create profile
   const createProfile = async (profileData) => {
     try {
       setError(null);
@@ -70,7 +64,6 @@ export function ProfileProvider({ children }) {
     }
   };
 
-  // Update profile
   const updateProfile = async (profileData) => {
     try {
       setError(null);
@@ -90,14 +83,12 @@ export function ProfileProvider({ children }) {
     }
   };
 
-  // Upload photo
   const uploadPhoto = async (file) => {
     try {
       setError(null);
       const response = await profileService.uploadPhoto(file);
 
       if (response.success) {
-        // Update profile with new photo URL
         setProfile((prev) => ({
           ...prev,
           photoUrl: response.data.photoUrl,
@@ -114,10 +105,8 @@ export function ProfileProvider({ children }) {
     }
   };
 
-  // Clear error
   const clearError = () => setError(null);
 
-  // Context value
   const value = {
     profile,
     loading,
@@ -133,7 +122,6 @@ export function ProfileProvider({ children }) {
   return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>;
 }
 
-// Custom hook to use profile context
 export function useProfile() {
   const context = useContext(ProfileContext);
 

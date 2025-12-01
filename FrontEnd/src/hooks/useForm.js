@@ -1,19 +1,11 @@
 import { useState, useCallback } from 'react';
 
-/**
- * Custom hook for handling form state and validation
- * @param {Object} initialValues - Initial form values
- * @param {Function} validate - Validation function (optional)
- */
 export function useForm(initialValues = {}, validate = null) {
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  /**
-   * Handle input change
-   */
   const handleChange = useCallback((e) => {
     const { name, value, type, checked, files } = e.target;
 
@@ -31,7 +23,6 @@ export function useForm(initialValues = {}, validate = null) {
       [name]: newValue,
     }));
 
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -40,9 +31,6 @@ export function useForm(initialValues = {}, validate = null) {
     }
   }, [errors]);
 
-  /**
-   * Handle input blur (mark as touched)
-   */
   const handleBlur = useCallback((e) => {
     const { name } = e.target;
 
@@ -51,7 +39,6 @@ export function useForm(initialValues = {}, validate = null) {
       [name]: true,
     }));
 
-    // Validate single field on blur
     if (validate) {
       const validationErrors = validate(values);
       if (validationErrors[name]) {
@@ -63,9 +50,6 @@ export function useForm(initialValues = {}, validate = null) {
     }
   }, [values, validate]);
 
-  /**
-   * Set a specific field value
-   */
   const setFieldValue = useCallback((name, value) => {
     setValues((prev) => ({
       ...prev,
@@ -73,9 +57,6 @@ export function useForm(initialValues = {}, validate = null) {
     }));
   }, []);
 
-  /**
-   * Set a specific field error
-   */
   const setFieldError = useCallback((name, error) => {
     setErrors((prev) => ({
       ...prev,
@@ -83,15 +64,10 @@ export function useForm(initialValues = {}, validate = null) {
     }));
   }, []);
 
-  /**
-   * Set multiple errors (from API response)
-   */
   const setApiErrors = useCallback((apiErrors) => {
     if (Array.isArray(apiErrors)) {
-      // Convert array of error strings to object
       const errorObj = {};
       apiErrors.forEach((err) => {
-        // Try to match error to field
         const lowerErr = err.toLowerCase();
         if (lowerErr.includes('email')) errorObj.email = err;
         else if (lowerErr.includes('password')) errorObj.password = err;
@@ -106,9 +82,6 @@ export function useForm(initialValues = {}, validate = null) {
     }
   }, []);
 
-  /**
-   * Validate all fields
-   */
   const validateForm = useCallback(() => {
     if (!validate) return true;
 
@@ -118,21 +91,16 @@ export function useForm(initialValues = {}, validate = null) {
     return Object.keys(validationErrors).length === 0;
   }, [values, validate]);
 
-  /**
-   * Handle form submission
-   */
   const handleSubmit = useCallback((onSubmit) => {
     return async (e) => {
       e.preventDefault();
 
-      // Mark all fields as touched
       const allTouched = Object.keys(values).reduce(
         (acc, key) => ({ ...acc, [key]: true }),
         {}
       );
       setTouched(allTouched);
 
-      // Validate
       if (!validateForm()) {
         return;
       }
@@ -147,9 +115,6 @@ export function useForm(initialValues = {}, validate = null) {
     };
   }, [values, validateForm]);
 
-  /**
-   * Reset form to initial values
-   */
   const resetForm = useCallback(() => {
     setValues(initialValues);
     setErrors({});
@@ -157,9 +122,6 @@ export function useForm(initialValues = {}, validate = null) {
     setIsSubmitting(false);
   }, [initialValues]);
 
-  /**
-   * Check if field has error and is touched
-   */
   const getFieldError = useCallback((name) => {
     return touched[name] && errors[name] ? errors[name] : '';
   }, [touched, errors]);

@@ -1,17 +1,8 @@
-/**
- * Formatting utility functions
- */
-
-/**
- * Format CPF: 12345678910 → 123.456.789-10
- */
 export const formatCpf = (cpf) => {
   if (!cpf) return '';
   
-  // Remove non-numeric characters
   const numbers = cpf.replace(/\D/g, '');
   
-  // Apply mask
   return numbers
     .replace(/(\d{3})(\d)/, '$1.$2')
     .replace(/(\d{3})(\d)/, '$1.$2')
@@ -19,32 +10,22 @@ export const formatCpf = (cpf) => {
     .substring(0, 14);
 };
 
-/**
- * Unformat CPF: 123.456.789-10 → 12345678910
- */
 export const unformatCpf = (cpf) => {
   if (!cpf) return '';
   return cpf.replace(/\D/g, '');
 };
 
-/**
- * Format phone: 51999887766 → (51) 99988-7766
- */
 export const formatPhone = (phone) => {
   if (!phone) return '';
   
-  // Remove non-numeric characters
   const numbers = phone.replace(/\D/g, '');
   
-  // Apply mask based on length
   if (numbers.length <= 10) {
-    // Landline: (XX) XXXX-XXXX
     return numbers
       .replace(/(\d{2})(\d)/, '($1) $2')
       .replace(/(\d{4})(\d)/, '$1-$2')
       .substring(0, 14);
   } else {
-    // Mobile: (XX) XXXXX-XXXX
     return numbers
       .replace(/(\d{2})(\d)/, '($1) $2')
       .replace(/(\d{5})(\d)/, '$1-$2')
@@ -52,17 +33,11 @@ export const formatPhone = (phone) => {
   }
 };
 
-/**
- * Unformat phone: (51) 99988-7766 → 51999887766
- */
 export const unformatPhone = (phone) => {
   if (!phone) return '';
   return phone.replace(/\D/g, '');
 };
 
-/**
- * Format date: 1995-05-15 → 15/05/1995
- */
 export const formatDate = (date, locale = 'pt-BR') => {
   if (!date) return '';
   
@@ -70,9 +45,6 @@ export const formatDate = (date, locale = 'pt-BR') => {
   return d.toLocaleDateString(locale);
 };
 
-/**
- * Format date for input: 1995-05-15T00:00:00 → 1995-05-15
- */
 export const formatDateForInput = (date) => {
   if (!date) return '';
   
@@ -80,9 +52,6 @@ export const formatDateForInput = (date) => {
   return d.toISOString().split('T')[0];
 };
 
-/**
- * Format date and time: 2024-01-15T14:30:00 → 15/01/2024 14:30
- */
 export const formatDateTime = (dateTime, locale = 'pt-BR') => {
   if (!dateTime) return '';
   
@@ -90,9 +59,6 @@ export const formatDateTime = (dateTime, locale = 'pt-BR') => {
   return d.toLocaleString(locale);
 };
 
-/**
- * Format relative time: "2 hours ago", "3 days ago"
- */
 export const formatRelativeTime = (date) => {
   const now = new Date();
   const d = new Date(date);
@@ -114,9 +80,6 @@ export const formatRelativeTime = (date) => {
   return `${diffYear} year${diffYear > 1 ? 's' : ''} ago`;
 };
 
-/**
- * Calculate age from birth date
- */
 export const calculateAge = (birthDate) => {
   const today = new Date();
   const birth = new Date(birthDate);
@@ -130,9 +93,6 @@ export const calculateAge = (birthDate) => {
   return age;
 };
 
-/**
- * Format height: 180 → 1.80m
- */
 export const formatHeight = (heightCm) => {
   if (!heightCm) return '';
   
@@ -140,25 +100,16 @@ export const formatHeight = (heightCm) => {
   return `${meters.toFixed(2)}m`;
 };
 
-/**
- * Format win rate: 0.75 → 75%
- */
 export const formatWinRate = (rate) => {
   if (rate === null || rate === undefined) return '0%';
   return `${rate.toFixed(1)}%`;
 };
 
-/**
- * Format number with thousands separator: 1000 → 1.000
- */
 export const formatNumber = (number, locale = 'pt-BR') => {
   if (number === null || number === undefined) return '0';
   return number.toLocaleString(locale);
 };
 
-/**
- * Format currency: 100 → R$ 100,00
- */
 export const formatCurrency = (value, currency = 'BRL', locale = 'pt-BR') => {
   if (value === null || value === undefined) return 'R$ 0,00';
   
@@ -168,25 +119,16 @@ export const formatCurrency = (value, currency = 'BRL', locale = 'pt-BR') => {
   }).format(value);
 };
 
-/**
- * Truncate text with ellipsis
- */
 export const truncateText = (text, maxLength) => {
   if (!text || text.length <= maxLength) return text;
   return text.substring(0, maxLength) + '...';
 };
 
-/**
- * Capitalize first letter
- */
 export const capitalize = (text) => {
   if (!text) return '';
   return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
 };
 
-/**
- * Get initials from name: "John Silva" → "JS"
- */
 export const getInitials = (name, maxChars = 2) => {
   if (!name) return '';
   
@@ -198,9 +140,6 @@ export const getInitials = (name, maxChars = 2) => {
     .toUpperCase();
 };
 
-/**
- * Format file size: 1024 → "1 KB"
- */
 export const formatFileSize = (bytes) => {
   if (bytes === 0) return '0 Bytes';
   

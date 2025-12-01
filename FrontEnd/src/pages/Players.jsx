@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import styled from 'styled-components';
 import profileService from '../services/profileService';
 import { getInitials } from '../utils/formatters';
 import Input from '../components/common/Input';
@@ -7,9 +8,179 @@ import Button from '../components/common/Button';
 import Loading from '../components/common/Loading';
 import Alert from '../components/common/Alert';
 
-/**
- * Players search/list page
- */
+const Container = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+`;
+
+const Header = styled.div`
+  margin-bottom: 32px;
+`;
+
+const Title = styled.h1`
+  font-size: 28px;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 8px 0;
+`;
+
+const Subtitle = styled.p`
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+`;
+
+const SearchCard = styled.div`
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  margin-bottom: 32px;
+`;
+
+const SearchForm = styled.form`
+  display: flex;
+  gap: 16px;
+`;
+
+const SearchInputWrapper = styled.div`
+  flex: 1;
+`;
+
+const ResultsInfo = styled.p`
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 16px 0;
+`;
+
+const PlayersList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+
+const PlayerCard = styled(Link)`
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  text-decoration: none;
+  transition: box-shadow 0.2s;
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  }
+`;
+
+const Avatar = styled.div`
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgb(79, 105, 191);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  flex-shrink: 0;
+`;
+
+const AvatarImage = styled.img`
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+`;
+
+const PlayerInfo = styled.div`
+  flex: 1;
+  min-width: 0;
+`;
+
+const PlayerName = styled.h3`
+  font-size: 16px;
+  font-weight: 600;
+  color: #111;
+  margin: 0 0 4px 0;
+`;
+
+const PlayerAge = styled.p`
+  font-size: 13px;
+  color: #666;
+  margin: 0;
+`;
+
+const PlayerStats = styled.div`
+  text-align: right;
+  flex-shrink: 0;
+`;
+
+const RankingBadge = styled.div`
+  font-size: 18px;
+  font-weight: 700;
+  color: rgb(79, 105, 191);
+  margin-bottom: 4px;
+`;
+
+const Record = styled.div`
+  font-size: 13px;
+  color: #666;
+`;
+
+const ArrowIcon = styled.svg`
+  width: 20px;
+  height: 20px;
+  color: #999;
+  flex-shrink: 0;
+`;
+
+const LoadingContainer = styled.div`
+  padding: 48px 0;
+`;
+
+const EmptyState = styled.div`
+  text-align: center;
+  padding: 48px 24px;
+`;
+
+const EmptyIcon = styled.div`
+  font-size: 64px;
+  margin-bottom: 16px;
+`;
+
+const EmptyTitle = styled.h2`
+  font-size: 20px;
+  font-weight: 600;
+  color: #111;
+  margin: 0 0 8px 0;
+`;
+
+const EmptyText = styled.p`
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+`;
+
+const Pagination = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 32px;
+`;
+
+const PageInfo = styled.span`
+  font-size: 14px;
+  color: #666;
+  padding: 0 16px;
+`;
+
 function Players() {
   const [query, setQuery] = useState('');
   const [players, setPlayers] = useState([]);
@@ -47,7 +218,7 @@ function Players() {
         setError(response.message);
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to search players');
+      setError(err.response?.data?.message || 'Falha ao buscar jogadores');
     } finally {
       setLoading(false);
     }
@@ -63,131 +234,117 @@ function Players() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Find Players</h1>
-        <p className="text-gray-600 mt-1">Search for beach tennis players by name.</p>
-      </div>
+    <Container>
+      <Header>
+        <Title>Encontrar Jogadores</Title>
+        <Subtitle>Busque jogadores de beach tennis por nome.</Subtitle>
+      </Header>
 
-      {/* Search Form */}
-      <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-        <form onSubmit={handleSubmit} className="flex gap-4">
-          <div className="flex-grow">
+      <SearchCard>
+        <SearchForm onSubmit={handleSubmit}>
+          <SearchInputWrapper>
             <Input
               name="search"
               type="text"
-              placeholder="Search by name..."
+              placeholder="Buscar por nome..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="mb-0"
             />
-          </div>
-          <Button type="submit" loading={loading}>
-            Search
+          </SearchInputWrapper>
+          <Button type="submit" disabled={loading}>
+            {loading ? 'Buscando...' : 'Buscar'}
           </Button>
-        </form>
-      </div>
+        </SearchForm>
+      </SearchCard>
 
       {error && (
-        <Alert type="error" message={error} onClose={() => setError('')} className="mb-6" />
+        <Alert type="error" message={error} onClose={() => setError('')} />
       )}
 
-      {/* Results */}
       {loading ? (
-        <div className="py-12">
-          <Loading text="Searching..." />
-        </div>
+        <LoadingContainer>
+          <Loading text="Buscando..." />
+        </LoadingContainer>
       ) : hasSearched ? (
         players.length > 0 ? (
           <>
-            <p className="text-gray-600 mb-4">
-              Found {pagination.totalItems} player{pagination.totalItems !== 1 ? 's' : ''}
-            </p>
+            <ResultsInfo>
+              {pagination.totalItems} jogador{pagination.totalItems !== 1 ? 'es' : ''} encontrado{pagination.totalItems !== 1 ? 's' : ''}
+            </ResultsInfo>
 
-            <div className="grid gap-4">
+            <PlayersList>
               {players.map((player) => (
-                <Link
+                <PlayerCard
                   key={player.userId}
                   to={`/players/${player.userId}`}
-                  className="bg-white rounded-xl shadow p-4 flex items-center gap-4 hover:shadow-lg transition-shadow"
                 >
-                  {/* Avatar */}
                   {player.photoUrl ? (
-                    <img
+                    <AvatarImage
                       src={`${apiBaseUrl}/${player.photoUrl}`}
                       alt={player.fullName}
-                      className="w-14 h-14 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="w-14 h-14 rounded-full bg-blue-600 text-white flex items-center justify-center text-lg font-bold">
+                    <Avatar>
                       {getInitials(player.fullName)}
-                    </div>
+                    </Avatar>
                   )}
 
-                  {/* Info */}
-                  <div className="flex-grow">
-                    <h3 className="font-semibold text-gray-900">{player.fullName}</h3>
-                    <p className="text-sm text-gray-500">{player.age} years old</p>
-                  </div>
+                  <PlayerInfo>
+                    <PlayerName>{player.fullName}</PlayerName>
+                    <PlayerAge>{player.age} anos</PlayerAge>
+                  </PlayerInfo>
 
-                  {/* Stats */}
-                  <div className="text-right">
-                    <div className="text-lg font-bold text-blue-600">#{player.ranking || 'N/A'}</div>
-                    <div className="text-sm text-gray-500">
-                      {player.winsCount}W - {player.lossesCount}L
-                    </div>
-                  </div>
+                  <PlayerStats>
+                    <RankingBadge>#{player.ranking || 'N/A'}</RankingBadge>
+                    <Record>
+                      {player.winsCount}V - {player.lossesCount}D
+                    </Record>
+                  </PlayerStats>
 
-                  {/* Arrow */}
-                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <ArrowIcon fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </Link>
+                  </ArrowIcon>
+                </PlayerCard>
               ))}
-            </div>
+            </PlayersList>
 
-            {/* Pagination */}
             {pagination.totalPages > 1 && (
-              <div className="flex justify-center items-center gap-2 mt-8">
+              <Pagination>
                 <Button
-                  variant="outline"
-                  size="small"
                   onClick={() => handlePageChange(pagination.pageNumber - 1)}
                   disabled={pagination.pageNumber === 1}
                 >
-                  Previous
+                  Anterior
                 </Button>
                 
-                <span className="px-4 text-gray-600">
-                  Page {pagination.pageNumber} of {pagination.totalPages}
-                </span>
+                <PageInfo>
+                  Página {pagination.pageNumber} de {pagination.totalPages}
+                </PageInfo>
                 
                 <Button
-                  variant="outline"
-                  size="small"
                   onClick={() => handlePageChange(pagination.pageNumber + 1)}
                   disabled={pagination.pageNumber === pagination.totalPages}
                 >
-                  Next
+                  Próxima
                 </Button>
-              </div>
+              </Pagination>
             )}
           </>
         ) : (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">🔍</div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">No players found</h2>
-            <p className="text-gray-600">Try a different search term.</p>
-          </div>
+          <EmptyState>
+            <EmptyIcon>🔍</EmptyIcon>
+            <EmptyTitle>Nenhum jogador encontrado</EmptyTitle>
+            <EmptyText>Tente uma busca diferente.</EmptyText>
+          </EmptyState>
         )
       ) : (
-        <div className="text-center py-12">
-          <div className="text-6xl mb-4">👥</div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Search for Players</h2>
-          <p className="text-gray-600">Enter a name above to find beach tennis players.</p>
-        </div>
+        <EmptyState>
+          <EmptyIcon>👥</EmptyIcon>
+          <EmptyTitle>Buscar Jogadores</EmptyTitle>
+          <EmptyText>Digite um nome acima para encontrar jogadores de beach tennis.</EmptyText>
+        </EmptyState>
       )}
-    </div>
+    </Container>
   );
 }
 

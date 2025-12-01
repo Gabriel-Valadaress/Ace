@@ -1,17 +1,9 @@
 import { useState, useCallback } from 'react';
 
-/**
- * Custom hook for handling API calls with loading and error states
- */
 export function useApi() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  /**
-   * Execute an API call with automatic loading and error handling
-   * @param {Function} apiCall - The API function to execute
-   * @returns {Object} - { data, error }
-   */
   const execute = useCallback(async (apiCall) => {
     try {
       setLoading(true);
@@ -34,9 +26,6 @@ export function useApi() {
     }
   }, []);
 
-  /**
-   * Clear the error state
-   */
   const clearError = useCallback(() => {
     setError(null);
   }, []);
@@ -49,9 +38,6 @@ export function useApi() {
   };
 }
 
-/**
- * Custom hook for handling paginated API calls
- */
 export function usePaginatedApi() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -65,12 +51,6 @@ export function usePaginatedApi() {
     hasPrevious: false,
   });
 
-  /**
-   * Fetch paginated data
-   * @param {Function} apiCall - API function that returns paginated response
-   * @param {number} page - Page number
-   * @param {number} pageSize - Items per page
-   */
   const fetchPage = useCallback(async (apiCall, page = 1, pageSize = 20) => {
     try {
       setLoading(true);
@@ -103,9 +83,6 @@ export function usePaginatedApi() {
     }
   }, []);
 
-  /**
-   * Clear data and reset pagination
-   */
   const reset = useCallback(() => {
     setData([]);
     setPagination({

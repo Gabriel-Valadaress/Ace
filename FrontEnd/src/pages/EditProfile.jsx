@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 import { useProfile } from '../context/ProfileContext';
 import { useForm } from '../hooks/useForm';
 import { validateProfileForm } from '../utils/validators';
@@ -9,9 +10,135 @@ import Button from '../components/common/Button';
 import Alert from '../components/common/Alert';
 import Loading from '../components/common/Loading';
 
-/**
- * Edit profile page
- */
+const Container = styled.div`
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px;
+`;
+
+const Header = styled.div`
+  margin-bottom: 32px;
+`;
+
+const Title = styled.h1`
+  font-size: 28px;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 8px 0;
+`;
+
+const Subtitle = styled.p`
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+`;
+
+const FormCard = styled.div`
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  padding: 32px;
+`;
+
+const PhotoSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 32px;
+`;
+
+const AvatarWrapper = styled.div`
+  position: relative;
+`;
+
+const Avatar = styled.div`
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: rgb(79, 105, 191);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 700;
+  border: 4px solid #e5e7eb;
+`;
+
+const AvatarImage = styled.img`
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #e5e7eb;
+`;
+
+const PhotoButton = styled.button`
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: white;
+  border-radius: 50%;
+  padding: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #f9fafb;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+    color: #666;
+  }
+`;
+
+const Spinner = styled.div`
+  width: 20px;
+  height: 20px;
+  border: 2px solid #e5e7eb;
+  border-top-color: rgb(79, 105, 191);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+`;
+
+const PhotoHint = styled.p`
+  font-size: 13px;
+  color: #999;
+  margin: 8px 0 0 0;
+`;
+
+const HiddenInput = styled.input`
+  display: none;
+`;
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+`;
+
 function EditProfile() {
   const { profile, loading, updateProfile, uploadPhoto } = useProfile();
   const navigate = useNavigate();
@@ -58,7 +185,7 @@ function EditProfile() {
     const result = await uploadPhoto(file);
 
     if (result.success) {
-      setSuccessMessage('Photo updated successfully!');
+      setSuccessMessage('Foto atualizada com sucesso!');
       setTimeout(() => setSuccessMessage(''), 3000);
     } else {
       setServerError(result.message);
@@ -71,7 +198,6 @@ function EditProfile() {
     setServerError('');
     setSuccessMessage('');
     
-    // Remove formatting from phone
     const phoneNumbers = formValues.phoneNumber.replace(/\D/g, '');
     
     const result = await updateProfile({
@@ -82,7 +208,7 @@ function EditProfile() {
     });
     
     if (result.success) {
-      setSuccessMessage('Profile updated successfully!');
+      setSuccessMessage('Perfil atualizado com sucesso!');
       setTimeout(() => navigate('/profile'), 1500);
     } else {
       setServerError(result.message);
@@ -96,19 +222,18 @@ function EditProfile() {
   const apiBaseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5230';
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Edit Profile</h1>
-        <p className="text-gray-600 mt-1">Update your player information.</p>
-      </div>
+    <Container>
+      <Header>
+        <Title>Editar Perfil</Title>
+        <Subtitle>Atualize suas informações de jogador.</Subtitle>
+      </Header>
 
-      <div className="bg-white rounded-xl shadow-lg p-8">
+      <FormCard>
         {serverError && (
           <Alert
             type="error"
             message={serverError}
             onClose={() => setServerError('')}
-            className="mb-6"
           />
         )}
 
@@ -117,59 +242,54 @@ function EditProfile() {
             type="success"
             message={successMessage}
             onClose={() => setSuccessMessage('')}
-            className="mb-6"
           />
         )}
 
-        {/* Photo Upload Section */}
-        <div className="flex flex-col items-center mb-8">
-          <div className="relative">
+        <PhotoSection>
+          <AvatarWrapper>
             {profile?.photoUrl ? (
-              <img
+              <AvatarImage
                 src={`${apiBaseUrl}/${profile.photoUrl}`}
                 alt={profile.fullName}
-                className="w-24 h-24 rounded-full object-cover border-4 border-gray-200"
               />
             ) : (
-              <div className="w-24 h-24 rounded-full bg-blue-600 text-white flex items-center justify-center text-2xl font-bold border-4 border-gray-200">
+              <Avatar>
                 {getInitials(profile?.fullName || values.fullName)}
-              </div>
+              </Avatar>
             )}
             
-            <button
+            <PhotoButton
               type="button"
               onClick={handlePhotoClick}
               disabled={uploading}
-              className="absolute bottom-0 right-0 bg-white rounded-full p-2 shadow-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-50"
             >
               {uploading ? (
-                <div className="w-5 h-5 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin" />
+                <Spinner />
               ) : (
-                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
               )}
-            </button>
-          </div>
+            </PhotoButton>
+          </AvatarWrapper>
           
-          <input
+          <HiddenInput
             ref={fileInputRef}
             type="file"
             accept="image/jpeg,image/png,image/webp"
             onChange={handlePhotoChange}
-            className="hidden"
           />
           
-          <p className="text-sm text-gray-500 mt-2">Click to change photo</p>
-        </div>
+          <PhotoHint>Clique para alterar a foto</PhotoHint>
+        </PhotoSection>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <Form onSubmit={handleSubmit(onSubmit)}>
           <Input
-            label="Full Name"
+            label="Nome Completo"
             name="fullName"
             type="text"
-            placeholder="John Silva"
+            placeholder="João Silva"
             value={values.fullName}
             onChange={handleChange}
             onBlur={handleBlur}
@@ -178,7 +298,7 @@ function EditProfile() {
           />
 
           <Input
-            label="Birth Date"
+            label="Data de Nascimento"
             name="birthDate"
             type="date"
             value={values.birthDate}
@@ -189,7 +309,7 @@ function EditProfile() {
           />
 
           <Input
-            label="Phone Number"
+            label="Telefone"
             name="phoneNumber"
             type="tel"
             placeholder="(51) 99999-9999"
@@ -202,7 +322,7 @@ function EditProfile() {
           />
 
           <Input
-            label="Height (cm)"
+            label="Altura (cm)"
             name="height"
             type="number"
             placeholder="180"
@@ -214,25 +334,23 @@ function EditProfile() {
             max={250}
           />
 
-          <div className="flex gap-4 mt-6">
+          <ButtonGroup>
             <Button
               type="button"
-              variant="outline"
               onClick={() => navigate('/profile')}
             >
-              Cancel
+              Cancelar
             </Button>
             <Button
               type="submit"
-              loading={isSubmitting}
-              className="flex-grow"
+              disabled={isSubmitting}
             >
-              Save Changes
+              {isSubmitting ? 'Salvando...' : 'Salvar Alterações'}
             </Button>
-          </div>
-        </form>
-      </div>
-    </div>
+          </ButtonGroup>
+        </Form>
+      </FormCard>
+    </Container>
   );
 }
 
